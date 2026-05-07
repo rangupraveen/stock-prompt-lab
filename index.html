@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Prompt Lab — Multi-Bagger Stock Analysis Framework</title>
+<meta name="description" content="A free tool to generate structured, research-grade prompts for identifying multi-bagger stocks. Built for serious investors.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c0c0c;
+    --bg2: #141414;
+    --bg3: #1c1c1c;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: rgba(201,168,76,0.15);
+    --text: #f0ece4;
+    --text2: #8a8680;
+    --text3: #555250;
+    --green: #3dba7a;
+    --red: #e05252;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TICKER TAPE ── */
+  .tape-wrap {
+    background: var(--gold);
+    overflow: hidden;
+    height: 34px;
+    display: flex;
+    align-items: center;
+  }
+  .tape-track {
+    display: flex;
+    gap: 0;
+    animation: tape 30s linear infinite;
+    white-space: nowrap;
+  }
+  .tape-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: #1a1200;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid rgba(0,0,0,0.15);
+  }
+  .tape-item .up { color: #1a6e3a; }
+  .tape-item .dn { color: #8b1a1a; }
+  @keyframes tape {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(12,12,12,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-pill {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before,
+  .hero-eyebrow::after {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 560px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 40px 80px;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── TOOL CARD ── */
+  .tool-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tool-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tool-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .badge-free {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── PARAMETERS ── */
+  .params-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+  .param-cell {
+    background: var(--bg2);
+    padding: 18px 22px;
+    transition: background 0.15s;
+  }
+  .param-cell:hover { background: var(--bg3); }
+  .param-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .param-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 4px 0 6px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .param-input::placeholder { color: var(--text3); }
+  .param-input:focus { border-bottom-color: var(--gold); }
+  select.param-input {
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555250' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    padding-right: 18px;
+  }
+  select.param-input option { background: #1c1c1c; color: var(--text); }
+
+  /* ── FRAMEWORK TOGGLES ── */
+  .framework-section {
+    padding: 18px 22px;
+    border-top: 1px solid var(--border);
+  }
+  .toggles-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .toggle-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+    user-select: none;
+    letter-spacing: 0.03em;
+  }
+  .toggle-pill:hover { border-color: var(--gold); color: var(--gold); }
+  .toggle-pill.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── OUTPUT ── */
+  .output-section {
+    border-top: 1px solid var(--border);
+  }
+  .output-toolbar {
+    padding: 14px 22px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .output-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); display: inline-block; }
+  .toolbar-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-sm:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .btn-primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #0c0c0c;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: var(--gold-light); border-color: var(--gold-light); color: #0c0c0c; }
+
+  #prompt-output {
+    padding: 24px 22px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: #c8c2b8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 200px;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+  #prompt-output .section-head {
+    color: var(--gold);
+    font-weight: 500;
+  }
+  #prompt-output .highlight {
+    background: var(--gold-dim);
+    color: var(--gold-light);
+    border-radius: 3px;
+    padding: 0 3px;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .step-card {
+    background: var(--bg2);
+    padding: 24px 20px;
+    transition: background 0.15s;
+  }
+  .step-card:hover { background: var(--bg3); }
+  .step-n {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--border2);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .step-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  @media (max-width: 600px) { .about-grid { grid-template-columns: 1fr; } }
+  .about-cell {
+    background: var(--bg2);
+    padding: 24px 22px;
+  }
+  .about-cell h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .about-cell p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--text2);
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ── DIVIDER ── */
+  .section-gap { margin-top: 60px; }
+
+  /* ── COPY TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--gold);
+    color: #0c0c0c;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: 30px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+    z-index: 999;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 50px 20px 40px; }
+    main { padding: 40px 20px 60px; }
+    footer { padding: 24px 20px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER TAPE -->
+<div class="tape-wrap" aria-hidden="true">
+  <div class="tape-track" id="tape"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Stock Prompt <span>Lab</span></a>
+  <div class="nav-links">
+    <a href="#tool">The Tool</a>
+    <a href="#how">How It Works</a>
+    <a href="#about">About</a>
+  </div>
+  <span class="nav-pill">Free Tool</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Research-grade investing framework</div>
+  <h1>Find your next<br><em>10x stock</em></h1>
+  <p class="hero-sub">Generate a structured, analyst-quality prompt to stress-test any stock against the multi-bagger framework — moat, growth, valuation, management, and risk.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">5</span>
+      <span class="stat-label">Analysis pillars</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">20+</span>
+      <span class="stat-label">Framework questions</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">$0</span>
+      <span class="stat-label">Forever free</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">60s</span>
+      <span class="stat-label">To generate</span>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main>
+
+  <!-- TOOL -->
+  <div id="tool">
+    <div class="section-label">The Prompt Generator</div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <span class="tool-title">Multi-bagger stock analysis prompt</span>
+        <span class="badge-free">Free · No login</span>
+      </div>
+
+      <!-- PARAMETERS -->
+      <div class="params-grid">
+        <div class="param-cell">
+          <div class="param-label">Ticker / Company</div>
+          <input class="param-input" id="p-ticker" type="text" placeholder="e.g. NVDA, Tesla, MercadoLibre" />
+        </div>
+        <div class="param-cell">
+          <div class="param-label">Time Horizon</div>
+          <select class="param-input" id="p-horizon">
+            <option value="1–2 years">1–2 years</option>
+            <option value="3–5 years" selected>3–5 years</option>
+            <option value="5–10 years">5–10 years</option>
+            <option value="10+ years">10+ years</option>
+          </select>
+        </div>
+        <div class="param-cell">
+          <div class="param-label">Return Target</div>
+          <select class="param-input" id="p-target">
+            <option value="2x (double)">2x — double</option>
+            <option value="5x" selected>5x</option>
+            <option value="10x">10x</option>
+            <option value="20x+">20x+</option>
+          </select>
+        </div>
+        <div class="param-cell">
+          <div class="param-label">Risk Tolerance</div>
+          <select class="param-input" id="p-risk">
+            <option value="conservative">Conservative</option>
+            <option value="moderate" selected>Moderate</option>
+            <option value="aggressive">Aggressive</option>
+            <option value="speculative">Speculative</option>
+          </select>
+        </div>
+        <div class="param-cell">
+          <div class="param-label">Stage / Market Cap</div>
+          <select class="param-input" id="p-stage">
+            <option value="any stage">Any stage</option>
+            <option value="small-cap / early stage" selected>Small-cap / early stage</option>
+            <option value="mid-cap / growth stage">Mid-cap / growth stage</option>
+            <option value="large-cap / compounding">Large-cap / compounding</option>
+          </select>
+        </div>
+        <div class="param-cell">
+          <div class="param-label">Sector Focus</div>
+          <input class="param-input" id="p-sector" type="text" placeholder="e.g. AI, fintech, healthcare (optional)" />
+        </div>
+      </div>
+
+      <!-- FRAMEWORK TOGGLES -->
+      <div class="framework-section">
+        <div class="param-label">Include analysis sections</div>
+        <div class="toggles-row" id="toggles">
+          <button class="toggle-pill active" data-key="moat">Economic moat</button>
+          <button class="toggle-pill active" data-key="growth">Growth drivers</button>
+          <button class="toggle-pill active" data-key="financials">Financial health</button>
+          <button class="toggle-pill active" data-key="management">Management &amp; incentives</button>
+          <button class="toggle-pill active" data-key="valuation">Valuation</button>
+          <button class="toggle-pill active" data-key="risks">Risk analysis</button>
+          <button class="toggle-pill active" data-key="verdict">Final verdict</button>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="output-section" id="output-section">
+        <div class="output-toolbar">
+          <div class="output-label">
+            <span class="dot"></span>
+            Generated prompt
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn-sm" id="btn-copy" onclick="copyPrompt()">
+              <svg viewBox="0 0 16 16"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2"/></svg>
+              Copy prompt
+            </button>
+            <button class="btn-sm btn-primary" onclick="openInChatGPT()">
+              Use with ChatGPT ↗
+            </button>
+          </div>
+        </div>
+        <div id="prompt-output" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="how" class="section-gap">
+    <div class="section-label">How to use this tool</div>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-n">01</div>
+        <div class="step-title">Enter your stock</div>
+        <div class="step-desc">Type any ticker or company name. Set your time horizon, return target, and risk profile.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">02</div>
+        <div class="step-title">Customize the framework</div>
+        <div class="step-desc">Toggle which analysis sections to include. The prompt updates instantly as you make changes.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">03</div>
+        <div class="step-title">Copy the prompt</div>
+        <div class="step-desc">Hit Copy and paste it into ChatGPT, Claude, Gemini, or any AI assistant you use.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">04</div>
+        <div class="step-title">Get your analysis</div>
+        <div class="step-desc">The AI walks through every pillar and gives you a conviction score with a clear buy/avoid verdict.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="about" class="section-gap">
+    <div class="section-label">About the framework</div>
+    <div class="about-grid">
+      <div class="about-cell">
+        <h3>What is a multi-bagger?</h3>
+        <p>A multi-bagger is a stock that returns a multiple of its original price — 2x, 5x, 10x or more. The term comes from baseball, where each "bag" is a base. Finding them requires looking beyond surface-level metrics to understand durable competitive advantages, massive addressable markets, and management with skin in the game.</p>
+      </div>
+      <div class="about-cell">
+        <h3>Why use a structured prompt?</h3>
+        <p>Most investors ask AI vague questions and get vague answers. This framework forces the AI to think like a fund manager — evaluating moat durability, operating leverage, insider ownership, and realistic valuation scenarios. The structure is what makes the output actually useful.</p>
+      </div>
+      <div class="about-cell">
+        <h3>Which AI works best?</h3>
+        <p>Claude and GPT-4o give the most nuanced financial reasoning. For the best results, paste the prompt directly — don't summarize it. Always cross-reference AI output with primary sources: earnings calls, 10-Ks, and analyst reports.</p>
+      </div>
+      <div class="about-cell">
+        <h3>Not financial advice</h3>
+        <p>This tool generates research prompts — not buy or sell recommendations. All analysis produced by AI models should be treated as a starting point for your own due diligence. Past performance doesn't guarantee future results. Invest only what you can afford to lose.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Stock Prompt <span>Lab</span></div>
+  <div class="footer-note">Free forever · No login · No data stored</div>
+</footer>
+
+<!-- TOAST -->
+<div id="toast">Copied to clipboard</div>
+
+<script>
+  /* ─── TICKER TAPE ─── */
+  const tickers = [
+    {sym:'NVDA',p:'$1,018.24',d:'+3.2%',up:true},
+    {sym:'TSLA',p:'$248.50',d:'-1.1%',up:false},
+    {sym:'AAPL',p:'$189.40',d:'+0.8%',up:true},
+    {sym:'MSFT',p:'$412.70',d:'+1.3%',up:true},
+    {sym:'AMZN',p:'$182.30',d:'-0.4%',up:false},
+    {sym:'GOOGL',p:'$175.20',d:'+0.6%',up:true},
+    {sym:'META',p:'$508.90',d:'+2.1%',up:true},
+    {sym:'PLTR',p:'$24.80',d:'+4.5%',up:true},
+    {sym:'SOFI',p:'$9.24',d:'+1.8%',up:true},
+    {sym:'MELI',p:'$1,920.00',d:'+0.9%',up:true},
+    {sym:'TTD',p:'$76.40',d:'-0.7%',up:false},
+    {sym:'CRWD',p:'$352.10',d:'+1.4%',up:true},
+    {sym:'DDOG',p:'$128.60',d:'-0.3%',up:false},
+  ];
+  const tape = document.getElementById('tape');
+  const set = tickers.map(t=>`<span class="tape-item"><b>${t.sym}</b> ${t.p} <span class="${t.up?'up':'dn'}">${t.d}</span></span>`).join('');
+  tape.innerHTML = set + set; // duplicate for seamless loop
+
+  /* ─── PROMPT SECTIONS ─── */
+  const sections = {
+    moat: `━━ ECONOMIC MOAT ━━
+• Rate the competitive moat: pricing power, switching costs, network effects, intangible assets, cost advantages
+• How durable is this advantage over the next decade?
+• Can competitors replicate this within 3–5 years?
+• Is the TAM large, underpenetrated, and growing?
+`,
+    growth: `━━ GROWTH DRIVERS ━━
+• Identify the top 2–3 catalysts that could drive exponential revenue growth
+• Assess organic vs inorganic growth levers (R&D, M&A, geographic expansion)
+• Realistic revenue CAGR for the next 5 years: bull / base / bear scenarios
+• Is this a winner-takes-most market dynamic?
+`,
+    financials: `━━ FINANCIAL HEALTH ━━
+• Revenue growth rate (trailing 3 years vs forward estimates)
+• Gross margin trend and operating leverage potential
+• Free cash flow profile — is the business self-funding or burning cash?
+• Balance sheet: net cash or debt? Runway if pre-profitable?
+• ROIC vs WACC — is capital being deployed effectively?
+`,
+    management: `━━ MANAGEMENT & INCENTIVES ━━
+• Is this founder-led or run by a long-tenure operator?
+• Do insiders own meaningful equity (>5%)? Any recent buying or selling?
+• Capital allocation track record — buybacks, dividends, acquisitions
+• Has management delivered on past guidance?
+`,
+    valuation: `━━ VALUATION ━━
+• Current EV/Revenue, P/E, EV/EBITDA vs sector peers
+• DCF implied growth rate — is the market underpricing future growth?
+• Where does the stock need to be in {HORIZON} to hit a {TARGET} return?
+• What exit multiple is realistic, and why?
+• Is there a margin of safety at the current price?
+`,
+    risks: `━━ RISK ANALYSIS ━━
+• Regulatory, competitive, or macro risks that could derail the thesis
+• Key assumptions that must hold for the bull case to work
+• What would make you sell immediately?
+• Black swan scenarios: dilution, insider exits, market share loss
+`,
+    verdict: `━━ FINAL VERDICT ━━
+Rate this stock: Strong Buy / Buy / Hold / Avoid
+Conviction score: 1–10
+State the single most important reason to own or avoid it.
+State the #1 risk to the thesis.
+`,
+  };
+
+  /* ─── STATE ─── */
+  const active = {moat:true,growth:true,financials:true,management:true,valuation:true,risks:true,verdict:true};
+
+  function getVals() {
+    return {
+      ticker: document.getElementById('p-ticker').value.trim() || '[COMPANY / TICKER]',
+      horizon: document.getElementById('p-horizon').value,
+      target: document.getElementById('p-target').value,
+      risk: document.getElementById('p-risk').value,
+      stage: document.getElementById('p-stage').value,
+      sector: document.getElementById('p-sector').value.trim(),
+    };
+  }
+
+  function buildPrompt() {
+    const v = getVals();
+    const sectorLine = v.sector ? `\nSector / theme focus: ${v.sector}` : '';
+    let out = `You are an expert equity analyst and fund manager specializing in identifying multi-bagger stocks — companies with the potential to deliver a ${v.target} return over a ${v.horizon} holding period.
+
+Analyze ${v.ticker} as a potential multi-bagger investment.
+
+Parameters:
+• Company/Ticker: ${v.ticker}
+• Investment horizon: ${v.horizon}
+• Target return: ${v.target}
+• Risk tolerance: ${v.risk}
+• Company stage: ${v.stage}${sectorLine}
+
+Use the following framework:
+
+`;
+    Object.keys(sections).forEach(k => {
+      if (active[k]) {
+        out += sections[k].replace(/{HORIZON}/g, v.horizon).replace(/{TARGET}/g, v.target) + '\n';
+      }
+    });
+    return out.trimEnd();
+  }
+
+  function renderPrompt() {
+    const raw = buildPrompt();
+    const el = document.getElementById('prompt-output');
+    el.textContent = raw;
+  }
+
+  /* ─── TOGGLES ─── */
+  document.getElementById('toggles').addEventListener('click', e => {
+    const btn = e.target.closest('.toggle-pill');
+    if (!btn) return;
+    const k = btn.dataset.key;
+    active[k] = !active[k];
+    btn.classList.toggle('active', active[k]);
+    renderPrompt();
+  });
+
+  /* ─── LIVE UPDATE ─── */
+  ['p-ticker','p-horizon','p-target','p-risk','p-stage','p-sector'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderPrompt);
+    document.getElementById(id).addEventListener('change', renderPrompt);
+  });
+
+  /* ─── COPY ─── */
+  function copyPrompt() {
+    navigator.clipboard.writeText(buildPrompt()).then(() => {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    });
+  }
+
+  /* ─── OPEN IN CHATGPT ─── */
+  function openInChatGPT() {
+    const prompt = encodeURIComponent(buildPrompt());
+    window.open('https://chatgpt.com/?q=' + prompt, '_blank');
+  }
+
+  /* ─── INIT ─── */
+  renderPrompt();
+</script>
+</body>
+</html>
