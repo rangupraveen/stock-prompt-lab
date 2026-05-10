@@ -3,871 +3,515 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stock Prompt Lab — Multi-Bagger Stock Analysis Framework</title>
-<meta name="description" content="A free tool to generate structured, research-grade prompts for identifying multi-bagger stocks. Built for serious investors.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>MultiBagger HQ - Free Multi-Bagger Stock Research & Analysis Tools</title>
+<meta name="description" content="Free stock research tools to identify multi-bagger stocks. AI-powered analysis prompts, S&P 500 heatmap, technical analysis charts, and real-time market data. No ads, no sign-up.">
+<meta name="keywords" content="multi-bagger stocks, stock analysis, stock research, multibagger, stock screener, S&P 500 heatmap, technical analysis, stock market, free stock tools, AI stock analysis, growth stocks, investment research, stock picker, equity research, fundamental analysis, stock valuation, bull market, bear market, stock market today, best stocks to buy, high growth stocks, 10x stocks, stock market analysis free">
+<meta name="author" content="Praveen">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://multibaggerhq.com/">
+<meta property="og:title" content="MultiBagger HQ - Free Multi-Bagger Stock Research Tools">
+<meta property="og:description" content="AI-powered stock analysis prompts, real-time S&P 500 heatmap, and technical analysis charts. 100% free, no ads, no sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://multibaggerhq.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MultiBagger HQ - Free Multi-Bagger Stock Research Tools">
+<meta name="twitter:description" content="AI-powered stock analysis prompts, real-time S&P 500 heatmap, and technical analysis charts. 100% free, no ads.">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--bg2:#1a1d2e;--bg3:#232740;
+  --text:#e2e4ea;--muted:#8b93a8;--accent:#7b61ff;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --border:#2a2f4a;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6}
 
-  :root {
-    --bg: #0c0c0c;
-    --bg2: #141414;
-    --bg3: #1c1c1c;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --gold: #c9a84c;
-    --gold-light: #e8c97a;
-    --gold-dim: rgba(201,168,76,0.15);
-    --text: #f0ece4;
-    --text2: #8a8680;
-    --text3: #555250;
-    --green: #3dba7a;
-    --red: #e05252;
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'DM Sans', system-ui, sans-serif;
-    --font-mono: 'DM Mono', 'Courier New', monospace;
-  }
+nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{font-size:1.25rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.5rem}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color 0.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
 
-  html { scroll-behavior: smooth; }
+.hero{padding:2.5rem 2rem 1.5rem;max-width:1400px;margin:0 auto}
+.hero h1{font-size:1.75rem;font-weight:700;margin-bottom:0.25rem}
+.hero p{color:var(--muted);font-size:0.95rem}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+.stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem;padding:0 2rem 1.5rem;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.stats-bar{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.stats-bar{grid-template-columns:1fr}}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;height:180px}
+.stat-card .tradingview-widget-container{height:100%!important;width:100%!important}
+.timeframe-bar{display:flex;align-items:center;justify-content:space-between;padding:0 2rem 0.75rem;max-width:1400px;margin:0 auto}
+.timeframe-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+.timeframe-toggles{display:flex;gap:0.35rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px}
+.tf-btn{padding:0.3rem 0.75rem;border-radius:6px;font-size:0.75rem;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);font-weight:500;transition:all 0.2s}
+.tf-btn:hover{color:var(--text)}
+.tf-btn.active{background:var(--accent);color:#fff}
+.tf-note{font-size:0.7rem;color:var(--muted);padding:0.25rem 2rem 0;max-width:1400px;margin:0 auto;text-align:right;opacity:0.7}
+.section-subtitle{color:var(--muted);font-size:0.85rem;margin-top:-0.5rem;margin-bottom:1.25rem}
+.section-hint{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;margin-bottom:1rem;font-size:0.85rem;color:var(--muted);display:flex;align-items:center;gap:0.5rem}
+.section-hint .hint-icon{color:var(--amber);font-size:1rem;flex-shrink:0}
 
-  /* ── TICKER TAPE ── */
-  .tape-wrap {
-    background: var(--gold);
-    overflow: hidden;
-    height: 34px;
-    display: flex;
-    align-items: center;
-  }
-  .tape-track {
-    display: flex;
-    gap: 0;
-    animation: tape 30s linear infinite;
-    white-space: nowrap;
-  }
-  .tape-item {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    color: #1a1200;
-    padding: 0 24px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border-right: 1px solid rgba(0,0,0,0.15);
-  }
-  .tape-item .up { color: #1a6e3a; }
-  .tape-item .dn { color: #8b1a1a; }
-  @keyframes tape {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+.section{padding:0 2rem 2rem;max-width:1400px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.section-title{font-size:1.15rem;font-weight:600;display:flex;align-items:center;gap:0.5rem}
+.section-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.section-badge{font-size:0.7rem;background:var(--bg3);color:var(--muted);padding:0.25rem 0.75rem;border-radius:20px;border:1px solid var(--border)}
 
-  /* ── NAV ── */
-  nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 40px;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: rgba(12,12,12,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .nav-logo {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .nav-logo span { color: var(--gold); }
-  .nav-pill {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    padding: 3px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.05em;
-  }
-  .nav-links { display: flex; gap: 28px; align-items: center; }
-  .nav-links a {
-    font-size: 13px;
-    color: var(--text2);
-    text-decoration: none;
-    transition: color 0.2s;
-    letter-spacing: 0.02em;
-  }
-  .nav-links a:hover { color: var(--text); }
+.heatmap-container{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:600px}
+.heatmap-container .tradingview-widget-container{height:100%}
 
-  /* ── HERO ── */
-  .hero {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 80px 40px 60px;
-    text-align: center;
-    position: relative;
-  }
-  .hero-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gold);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .hero-eyebrow::before,
-  .hero-eyebrow::after {
-    content: '';
-    width: 32px;
-    height: 1px;
-    background: var(--gold);
-    opacity: 0.5;
-  }
-  .hero h1 {
-    font-family: var(--font-display);
-    font-size: clamp(36px, 6vw, 58px);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
-    color: var(--text);
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--gold);
-  }
-  .hero-sub {
-    font-size: 16px;
-    color: var(--text2);
-    max-width: 560px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-    padding: 28px 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--gold);
-    display: block;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label {
-    font-size: 11px;
-    color: var(--text3);
-    font-family: var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+.prompt-gen{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.75rem 2rem}
+.prompt-gen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.prompt-gen-title{font-size:1.25rem;font-weight:700}
+.free-badge{font-size:0.7rem;color:var(--amber);border:1px solid var(--amber);padding:0.3rem 0.75rem;border-radius:20px;letter-spacing:0.08em;text-transform:uppercase}
+.prompt-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+@media(max-width:768px){.prompt-grid{grid-template-columns:1fr 1fr}}
+.field-group{display:flex;flex-direction:column;gap:0.25rem}
+.field-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.field-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;color:var(--text);font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s}
+.field-input:focus{border-color:var(--accent)}
+.field-input.highlight{border-color:var(--amber);box-shadow:0 0 0 2px rgba(245,158,11,0.15)}
+.field-input::placeholder{color:#555a70}
+select.field-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b93a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center}
+.divider{border:none;border-top:1px solid var(--border);margin:0.25rem 0 1rem}
+.sections-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
+.analysis-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem}
+.tag{padding:0.35rem 0.85rem;border-radius:20px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;border:1px solid var(--amber);color:var(--amber);background:transparent;font-family:inherit;user-select:none}
+.tag.active{background:rgba(245,158,11,0.15);color:var(--amber);border-color:var(--amber)}
+.tag:not(.active){border-color:var(--border);color:var(--muted)}
+.tag:hover{border-color:var(--amber);color:var(--amber)}
+.prompt-actions-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.prompt-actions-bar .action-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+.btn{padding:0.5rem 1rem;border-radius:8px;font-size:0.8rem;font-family:inherit;cursor:pointer;border:1px solid var(--border);transition:all 0.2s;display:flex;align-items:center;gap:0.5rem;white-space:nowrap}
+.btn-copy{background:var(--bg3);color:var(--text);border-color:var(--border)}
+.btn-copy:hover{border-color:var(--muted)}
+.action-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
+.ai-buttons{display:flex;gap:0.5rem;flex-wrap:wrap}
+.btn-ai-app{padding:0.45rem 0.85rem;border-radius:8px;font-size:0.8rem;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text);display:flex;align-items:center;gap:0.45rem;transition:all 0.2s;white-space:nowrap}
+.btn-ai-app:hover{border-color:var(--muted);background:var(--bg)}
+.btn-ai-app .ai-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.prompt-output{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-family:'Courier New',monospace;font-size:0.82rem;color:var(--muted);line-height:1.7;max-height:300px;overflow-y:auto;white-space:pre-wrap}
+.copied-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:0.5rem 1.25rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:200;display:none;animation:fadeup 0.3s ease}
+@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-  /* ── MAIN CONTENT ── */
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 60px 40px 80px;
-  }
+footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--muted);font-size:0.8rem;margin-top:2rem}
+footer a{color:var(--accent);text-decoration:none}
 
-  /* ── SECTION LABEL ── */
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+/* ===== MOBILE RESPONSIVE ===== */
 
-  /* ── TOOL CARD ── */
-  .tool-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .tool-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .tool-title {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .badge-free {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 4px 10px;
-    background: var(--gold-dim);
-    color: var(--gold);
-    border: 1px solid rgba(201,168,76,0.25);
-    border-radius: 20px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
+/* Nav: scrollable links on small screens */
+@media(max-width:640px){
+  nav{padding:0 1rem;height:52px}
+  .logo{font-size:1.1rem}
+  .logo-icon{width:28px;height:28px;font-size:0.75rem}
+  .nav-links{gap:0.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-size:0.8rem;white-space:nowrap}
+}
 
-  /* ── PARAMETERS ── */
-  .params-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--border);
-  }
-  .param-cell {
-    background: var(--bg2);
-    padding: 18px 22px;
-    transition: background 0.15s;
-  }
-  .param-cell:hover { background: var(--bg3); }
-  .param-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 8px;
-  }
-  .param-input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border2);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    padding: 4px 0 6px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .param-input::placeholder { color: var(--text3); }
-  .param-input:focus { border-bottom-color: var(--gold); }
-  select.param-input {
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555250' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0 center;
-    padding-right: 18px;
-  }
-  select.param-input option { background: #1c1c1c; color: var(--text); }
+/* Hero */
+@media(max-width:640px){
+  .hero{padding:1.5rem 1rem 1rem}
+  .hero h1{font-size:1.35rem}
+  .hero p{font-size:0.85rem}
+}
 
-  /* ── FRAMEWORK TOGGLES ── */
-  .framework-section {
-    padding: 18px 22px;
-    border-top: 1px solid var(--border);
-  }
-  .toggles-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .toggle-pill {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 5px 13px;
-    border-radius: 20px;
-    border: 1px solid var(--border2);
-    color: var(--text2);
-    cursor: pointer;
-    background: transparent;
-    transition: all 0.15s;
-    user-select: none;
-    letter-spacing: 0.03em;
-  }
-  .toggle-pill:hover { border-color: var(--gold); color: var(--gold); }
-  .toggle-pill.active {
-    background: var(--gold-dim);
-    border-color: var(--gold);
-    color: var(--gold);
-  }
+/* Timeframe bar */
+@media(max-width:640px){
+  .timeframe-bar{padding:0 1rem 0.5rem;flex-direction:column;align-items:flex-start;gap:0.5rem}
+  .tf-note{padding:0.25rem 1rem 0;font-size:0.65rem}
+}
 
-  /* ── OUTPUT ── */
-  .output-section {
-    border-top: 1px solid var(--border);
-  }
-  .output-toolbar {
-    padding: 14px 22px;
-    background: var(--bg3);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .output-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); display: inline-block; }
-  .toolbar-actions { display: flex; gap: 8px; }
-  .btn-sm {
-    background: transparent;
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-family: var(--font-body);
-    color: var(--text2);
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-sm:hover { border-color: var(--gold); color: var(--gold); }
-  .btn-sm svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-  .btn-primary {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: #0c0c0c;
-    font-weight: 500;
-  }
-  .btn-primary:hover { background: var(--gold-light); border-color: var(--gold-light); color: #0c0c0c; }
+/* Stats bar */
+@media(max-width:640px){
+  .stats-bar{padding:0 1rem 1rem;gap:0.75rem}
+  .stat-card{height:160px}
+}
 
-  #prompt-output {
-    padding: 24px 22px;
-    font-family: var(--font-mono);
-    font-size: 12.5px;
-    line-height: 1.9;
-    color: #c8c2b8;
-    white-space: pre-wrap;
-    word-break: break-word;
-    min-height: 200px;
-    max-height: 520px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border2) transparent;
-  }
-  #prompt-output .section-head {
-    color: var(--gold);
-    font-weight: 500;
-  }
-  #prompt-output .highlight {
-    background: var(--gold-dim);
-    color: var(--gold-light);
-    border-radius: 3px;
-    padding: 0 3px;
-  }
+/* Sections */
+@media(max-width:640px){
+  .section{padding:0 1rem 1.5rem}
+  .section-header{flex-direction:column;align-items:flex-start;gap:0.35rem}
+  .section-subtitle{font-size:0.8rem;margin-bottom:1rem}
+  .section-hint{font-size:0.8rem;padding:0.5rem 0.75rem}
+}
 
-  /* ── HOW IT WORKS ── */
-  .steps-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-top: 20px;
-  }
-  .step-card {
-    background: var(--bg2);
-    padding: 24px 20px;
-    transition: background 0.15s;
-  }
-  .step-card:hover { background: var(--bg3); }
-  .step-n {
-    font-family: var(--font-display);
-    font-size: 32px;
-    font-weight: 600;
-    color: var(--border2);
-    line-height: 1;
-    margin-bottom: 12px;
-  }
-  .step-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+/* Prompt generator */
+@media(max-width:640px){
+  .prompt-gen{padding:1.25rem 1rem}
+  .prompt-gen-header{flex-direction:column;align-items:flex-start;gap:0.5rem;margin-bottom:1rem}
+  .prompt-gen-title{font-size:1.1rem}
+  .prompt-grid{grid-template-columns:1fr;gap:0.75rem;margin-bottom:1rem}
+  .analysis-tags{gap:0.4rem}
+  .tag{padding:0.3rem 0.7rem;font-size:0.75rem}
+}
 
-  /* ── ABOUT ── */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-top: 20px;
-  }
-  @media (max-width: 600px) { .about-grid { grid-template-columns: 1fr; } }
-  .about-cell {
-    background: var(--bg2);
-    padding: 24px 22px;
-  }
-  .about-cell h3 {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-  .about-cell p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+/* Action buttons - stack on mobile */
+@media(max-width:640px){
+  .prompt-actions-bar{flex-direction:column;align-items:stretch;gap:0.5rem}
+  .action-divider{display:none}
+  .prompt-actions-bar .action-label{text-align:center}
+  .btn-copy{justify-content:center}
+  .ai-buttons{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem}
+  .btn-ai-app{justify-content:center;padding:0.5rem 0.75rem}
+  .prompt-output{font-size:0.75rem;padding:1rem;max-height:250px}
+}
 
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 28px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .footer-logo {
-    font-family: var(--font-display);
-    font-size: 14px;
-    color: var(--text2);
-  }
-  .footer-logo span { color: var(--gold); }
-  .footer-note {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text3);
-  }
+/* Charts and heatmap */
+@media(max-width:640px){
+  .heatmap-container{height:400px}
+}
+@media(max-width:640px){
+  #technicals > div:last-child{height:350px!important}
+}
 
-  /* ── DIVIDER ── */
-  .section-gap { margin-top: 60px; }
-
-  /* ── COPY TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--gold);
-    color: #0c0c0c;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 10px 22px;
-    border-radius: 30px;
-    opacity: 0;
-    transition: all 0.25s ease;
-    pointer-events: none;
-    letter-spacing: 0.05em;
-    z-index: 999;
-  }
-  #toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    nav { padding: 16px 20px; }
-    .hero { padding: 50px 20px 40px; }
-    main { padding: 40px 20px 60px; }
-    footer { padding: 24px 20px; }
-    .nav-links { display: none; }
-  }
+/* Footer */
+@media(max-width:640px){
+  footer{padding:1.25rem 1rem}
+}
 </style>
 </head>
 <body>
 
-<!-- TICKER TAPE -->
-<div class="tape-wrap" aria-hidden="true">
-  <div class="tape-track" id="tape"></div>
-</div>
-
-<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">Stock Prompt <span>Lab</span></a>
-  <div class="nav-links">
-    <a href="#tool">The Tool</a>
-    <a href="#how">How It Works</a>
-    <a href="#about">About</a>
-  </div>
-  <span class="nav-pill">Free Tool</span>
+  <a href="/" class="logo">
+    <div class="logo-icon">MB</div>
+    MultiBagger HQ
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Dashboard</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#technicals">Technicals</a></li>
+    <li><a href="#heatmap">Heatmap</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">Research-grade investing framework</div>
-  <h1>Find your next<br><em>10x stock</em></h1>
-  <p class="hero-sub">Generate a structured, analyst-quality prompt to stress-test any stock against the multi-bagger framework — moat, growth, valuation, management, and risk.</p>
-  <div class="hero-stats">
-    <div class="stat">
-      <span class="stat-num">5</span>
-      <span class="stat-label">Analysis pillars</span>
+<!-- Ticker Tape -->
+<div class="tradingview-widget-container" style="width:100%">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+  {
+    "symbols": [
+      {"proName":"FOREXCOM:SPXUSD","title":"S&P 500"},
+      {"proName":"FOREXCOM:NSXUSD","title":"US 100"},
+      {"proName":"FX_IDC:EURUSD","title":"EUR to USD"},
+      {"proName":"BITSTAMP:BTCUSD","title":"Bitcoin"},
+      {"proName":"BITSTAMP:ETHUSD","title":"Ethereum"},
+      {"proName":"FOREXCOM:DJI","title":"Dow Jones"},
+      {"proName":"INDEX:NKY","title":"Nikkei 225"},
+      {"proName":"INDEX:DEU40","title":"DAX"}
+    ],
+    "showSymbolLogo": true,
+    "isTransparent": true,
+    "displayMode": "adaptive",
+    "colorTheme": "dark",
+    "locale": "en"
+  }
+  </script>
+</div>
+
+<div class="hero">
+  <h1>Market overview</h1>
+  <p>Built by Praveen &mdash; 100% free, no ads, no sign-up, no data collection. Just research tools for investors.</p>
+</div>
+
+<!-- Timeframe Toggle + Market Stats -->
+<div class="timeframe-bar">
+  <span class="timeframe-label">Market snapshot</span>
+  <div class="timeframe-toggles" id="tf-toggles">
+    <button class="tf-btn" data-range="1D">1D</button>
+    <button class="tf-btn active" data-range="1M">1M</button>
+    <button class="tf-btn" data-range="3M">3M</button>
+    <button class="tf-btn" data-range="12M">1Y</button>
+    <button class="tf-btn" data-range="60M">5Y</button>
+  </div>
+</div>
+<div class="stats-bar" id="stats"></div>
+<div class="tf-note">% change shown is daily &mdash; chart reflects selected timeframe</div>
+
+<!-- Prompt Generator -->
+<div class="section" id="research">
+  <div class="section-header">
+    <div class="section-title"><span class="dot" style="background:var(--amber)"></span>Multi-bagger stock analysis prompt</div>
+  </div>
+  <p class="section-subtitle">Enter a ticker below and click "Copy prompt" or "Use with AI" to generate a comprehensive stock analysis prompt.</p>
+  <div class="prompt-gen">
+    <div class="prompt-gen-header">
+      <div class="prompt-gen-title">Generate research prompt</div>
+      <span class="free-badge">Free tool</span>
     </div>
-    <div class="stat">
-      <span class="stat-num">20+</span>
-      <span class="stat-label">Framework questions</span>
+
+    <div class="prompt-grid">
+      <div class="field-group">
+        <label class="field-label">Ticker / Company</label>
+        <input type="text" id="pg-ticker" class="field-input highlight" placeholder="e.g. NVDA or Nvidia">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Time horizon</label>
+        <select id="pg-horizon" class="field-input">
+          <option value="1-2 years">1-2 years</option>
+          <option value="3-5 years" selected>3-5 years</option>
+          <option value="5-10 years">5-10 years</option>
+          <option value="10+ years">10+ years</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Return target</label>
+        <select id="pg-return" class="field-input">
+          <option value="2x (100%)">2x (100%)</option>
+          <option value="3x (200%)" selected>3x (200%)</option>
+          <option value="5x (400%)">5x (400%)</option>
+          <option value="10x (900%)">10x (900%)</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Risk tolerance</label>
+        <select id="pg-risk" class="field-input">
+          <option value="Conservative">Conservative</option>
+          <option value="Moderate" selected>Moderate</option>
+          <option value="Aggressive">Aggressive</option>
+        </select>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-num">$0</span>
-      <span class="stat-label">Forever free</span>
+
+    <hr class="divider">
+    <div class="sections-label">Analysis sections (toggle on/off)</div>
+    <div class="analysis-tags" id="pg-tags">
+      <button class="tag active" data-tag="Economic moat">Economic moat</button>
+      <button class="tag active" data-tag="Growth drivers">Growth drivers</button>
+      <button class="tag active" data-tag="Financial health">Financial health</button>
+      <button class="tag active" data-tag="Management & incentives">Management &amp; incentives</button>
+      <button class="tag active" data-tag="Valuation">Valuation</button>
+      <button class="tag active" data-tag="Risk analysis">Risk analysis</button>
+      <button class="tag active" data-tag="Final verdict">Final verdict</button>
     </div>
-    <div class="stat">
-      <span class="stat-num">60s</span>
-      <span class="stat-label">To generate</span>
+
+    <div class="prompt-actions-bar">
+      <button class="btn btn-copy" onclick="copyPrompt()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy prompt
+      </button>
+      <div class="action-divider"></div>
+      <span class="action-label">Use with</span>
+      <div class="ai-buttons">
+        <button class="btn-ai-app" onclick="useWithAi('chatgpt')"><span class="ai-dot" style="background:#10a37f"></span>ChatGPT</button>
+        <button class="btn-ai-app" onclick="useWithAi('claude')"><span class="ai-dot" style="background:#d97706"></span>Claude</button>
+        <button class="btn-ai-app" onclick="useWithAi('gemini')"><span class="ai-dot" style="background:#4285f4"></span>Gemini</button>
+        <button class="btn-ai-app" onclick="useWithAi('grok')"><span class="ai-dot" style="background:#1d9bf0"></span>Grok</button>
+      </div>
+    </div>
+    <div class="prompt-output" id="prompt-output">Your generated prompt will appear here. Enter a ticker above to get started.</div>
+  </div>
+</div>
+
+<!-- Technical Analysis Chart -->
+<div class="section" id="technicals">
+  <div class="section-header">
+    <div class="section-title"><span class="dot" style="background:var(--green)"></span>Technical analysis</div>
+    <span class="section-badge">Interactive chart</span>
+  </div>
+  <div class="section-hint">
+    <span class="hint-icon">&#9432;</span>
+    Enter any ticker symbol in the search bar below the chart to analyze it. Add indicators like RSI, MACD, Bollinger Bands, and moving averages from the toolbar.
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:500px">
+    <div class="tradingview-widget-container" style="height:100%;width:100%">
+      <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+      {
+        "autosize": true,
+        "symbol": "TSLA",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "backgroundColor": "rgba(26, 29, 46, 1)",
+        "gridColor": "rgba(42, 47, 74, 0.5)",
+        "allow_symbol_change": true,
+        "hide_top_toolbar": false,
+        "hide_legend": false,
+        "save_image": false,
+        "calendar": false,
+        "studies": ["RSI@tv-basicstudies"],
+        "support_host": "https://www.tradingview.com"
+      }
+      </script>
     </div>
   </div>
-</section>
+</div>
 
-<!-- MAIN -->
-<main>
-
-  <!-- TOOL -->
-  <div id="tool">
-    <div class="section-label">The Prompt Generator</div>
-    <div class="tool-card">
-      <div class="tool-header">
-        <span class="tool-title">Multi-bagger stock analysis prompt</span>
-        <span class="badge-free">Free · No login</span>
-      </div>
-
-      <!-- PARAMETERS -->
-      <div class="params-grid">
-        <div class="param-cell">
-          <div class="param-label">Ticker / Company</div>
-          <input class="param-input" id="p-ticker" type="text" placeholder="e.g. NVDA, Tesla, MercadoLibre" />
-        </div>
-        <div class="param-cell">
-          <div class="param-label">Time Horizon</div>
-          <select class="param-input" id="p-horizon">
-            <option value="1–2 years">1–2 years</option>
-            <option value="3–5 years" selected>3–5 years</option>
-            <option value="5–10 years">5–10 years</option>
-            <option value="10+ years">10+ years</option>
-          </select>
-        </div>
-        <div class="param-cell">
-          <div class="param-label">Return Target</div>
-          <select class="param-input" id="p-target">
-            <option value="2x (double)">2x — double</option>
-            <option value="5x" selected>5x</option>
-            <option value="10x">10x</option>
-            <option value="20x+">20x+</option>
-          </select>
-        </div>
-        <div class="param-cell">
-          <div class="param-label">Risk Tolerance</div>
-          <select class="param-input" id="p-risk">
-            <option value="conservative">Conservative</option>
-            <option value="moderate" selected>Moderate</option>
-            <option value="aggressive">Aggressive</option>
-            <option value="speculative">Speculative</option>
-          </select>
-        </div>
-        <div class="param-cell">
-          <div class="param-label">Stage / Market Cap</div>
-          <select class="param-input" id="p-stage">
-            <option value="any stage">Any stage</option>
-            <option value="small-cap / early stage" selected>Small-cap / early stage</option>
-            <option value="mid-cap / growth stage">Mid-cap / growth stage</option>
-            <option value="large-cap / compounding">Large-cap / compounding</option>
-          </select>
-        </div>
-        <div class="param-cell">
-          <div class="param-label">Sector Focus</div>
-          <input class="param-input" id="p-sector" type="text" placeholder="e.g. AI, fintech, healthcare (optional)" />
-        </div>
-      </div>
-
-      <!-- FRAMEWORK TOGGLES -->
-      <div class="framework-section">
-        <div class="param-label">Include analysis sections</div>
-        <div class="toggles-row" id="toggles">
-          <button class="toggle-pill active" data-key="moat">Economic moat</button>
-          <button class="toggle-pill active" data-key="growth">Growth drivers</button>
-          <button class="toggle-pill active" data-key="financials">Financial health</button>
-          <button class="toggle-pill active" data-key="management">Management &amp; incentives</button>
-          <button class="toggle-pill active" data-key="valuation">Valuation</button>
-          <button class="toggle-pill active" data-key="risks">Risk analysis</button>
-          <button class="toggle-pill active" data-key="verdict">Final verdict</button>
-        </div>
-      </div>
-
-      <!-- OUTPUT -->
-      <div class="output-section" id="output-section">
-        <div class="output-toolbar">
-          <div class="output-label">
-            <span class="dot"></span>
-            Generated prompt
-          </div>
-          <div class="toolbar-actions">
-            <button class="btn-sm" id="btn-copy" onclick="copyPrompt()">
-              <svg viewBox="0 0 16 16"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2"/></svg>
-              Copy prompt
-            </button>
-            <button class="btn-sm btn-primary" onclick="openInChatGPT()">
-              Use with ChatGPT ↗
-            </button>
-          </div>
-        </div>
-        <div id="prompt-output" aria-live="polite"></div>
-      </div>
+<!-- S&P 500 Heatmap -->
+<div class="section" id="heatmap">
+  <div class="section-header">
+    <div class="section-title"><span class="dot"></span>S&P 500 heatmap</div>
+    <span class="section-badge">Powered by TradingView</span>
+  </div>
+  <div class="heatmap-container">
+    <div class="tradingview-widget-container" style="height:100%;width:100%">
+      <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
+      {
+        "exchanges": [],
+        "dataSource": "SPX500",
+        "grouping": "sector",
+        "blockSize": "market_cap_basic",
+        "blockColor": "change",
+        "locale": "en",
+        "symbolUrl": "",
+        "colorTheme": "dark",
+        "hasTopBar": true,
+        "isDataSet498enabled": false,
+        "isZoomEnabled": true,
+        "hasSymbolTooltip": true,
+        "isMonoSize": false,
+        "width": "100%",
+        "height": "100%"
+      }
+      </script>
     </div>
   </div>
+</div>
 
-  <!-- HOW IT WORKS -->
-  <div id="how" class="section-gap">
-    <div class="section-label">How to use this tool</div>
-    <div class="steps-row">
-      <div class="step-card">
-        <div class="step-n">01</div>
-        <div class="step-title">Enter your stock</div>
-        <div class="step-desc">Type any ticker or company name. Set your time horizon, return target, and risk profile.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-n">02</div>
-        <div class="step-title">Customize the framework</div>
-        <div class="step-desc">Toggle which analysis sections to include. The prompt updates instantly as you make changes.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-n">03</div>
-        <div class="step-title">Copy the prompt</div>
-        <div class="step-desc">Hit Copy and paste it into ChatGPT, Claude, Gemini, or any AI assistant you use.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-n">04</div>
-        <div class="step-title">Get your analysis</div>
-        <div class="step-desc">The AI walks through every pillar and gives you a conviction score with a clear buy/avoid verdict.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ABOUT -->
-  <div id="about" class="section-gap">
-    <div class="section-label">About the framework</div>
-    <div class="about-grid">
-      <div class="about-cell">
-        <h3>What is a multi-bagger?</h3>
-        <p>A multi-bagger is a stock that returns a multiple of its original price — 2x, 5x, 10x or more. The term comes from baseball, where each "bag" is a base. Finding them requires looking beyond surface-level metrics to understand durable competitive advantages, massive addressable markets, and management with skin in the game.</p>
-      </div>
-      <div class="about-cell">
-        <h3>Why use a structured prompt?</h3>
-        <p>Most investors ask AI vague questions and get vague answers. This framework forces the AI to think like a fund manager — evaluating moat durability, operating leverage, insider ownership, and realistic valuation scenarios. The structure is what makes the output actually useful.</p>
-      </div>
-      <div class="about-cell">
-        <h3>Which AI works best?</h3>
-        <p>Claude and GPT-4o give the most nuanced financial reasoning. For the best results, paste the prompt directly — don't summarize it. Always cross-reference AI output with primary sources: earnings calls, 10-Ks, and analyst reports.</p>
-      </div>
-      <div class="about-cell">
-        <h3>Not financial advice</h3>
-        <p>This tool generates research prompts — not buy or sell recommendations. All analysis produced by AI models should be treated as a starting point for your own due diligence. Past performance doesn't guarantee future results. Invest only what you can afford to lose.</p>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">Stock Prompt <span>Lab</span></div>
-  <div class="footer-note">Free forever · No login · No data stored</div>
+<footer id="about">
+  <p style="margin-bottom:0.5rem;font-size:0.85rem;color:var(--text)">Built by <strong>Praveen</strong> &mdash; 100% free, no ads, no sign-up, no data collection. Just research tools for investors.</p>
+  <p>MultiBagger HQ &mdash; Market data powered by <a href="https://www.tradingview.com" target="_blank" rel="noopener">TradingView</a>.</p>
+  <p style="margin-top:0.25rem">Not financial advice. For educational purposes only.</p>
 </footer>
 
-<!-- TOAST -->
-<div id="toast">Copied to clipboard</div>
-
 <script>
-  /* ─── TICKER TAPE ─── */
-  const tickers = [
-    {sym:'NVDA',p:'$1,018.24',d:'+3.2%',up:true},
-    {sym:'TSLA',p:'$248.50',d:'-1.1%',up:false},
-    {sym:'AAPL',p:'$189.40',d:'+0.8%',up:true},
-    {sym:'MSFT',p:'$412.70',d:'+1.3%',up:true},
-    {sym:'AMZN',p:'$182.30',d:'-0.4%',up:false},
-    {sym:'GOOGL',p:'$175.20',d:'+0.6%',up:true},
-    {sym:'META',p:'$508.90',d:'+2.1%',up:true},
-    {sym:'PLTR',p:'$24.80',d:'+4.5%',up:true},
-    {sym:'SOFI',p:'$9.24',d:'+1.8%',up:true},
-    {sym:'MELI',p:'$1,920.00',d:'+0.9%',up:true},
-    {sym:'TTD',p:'$76.40',d:'-0.7%',up:false},
-    {sym:'CRWD',p:'$352.10',d:'+1.4%',up:true},
-    {sym:'DDOG',p:'$128.60',d:'-0.3%',up:false},
-  ];
-  const tape = document.getElementById('tape');
-  const set = tickers.map(t=>`<span class="tape-item"><b>${t.sym}</b> ${t.p} <span class="${t.up?'up':'dn'}">${t.d}</span></span>`).join('');
-  tape.innerHTML = set + set; // duplicate for seamless loop
+// --- Market Stat Widgets ---
+var statSymbols=[
+  {symbol:"FOREXCOM:SPXUSD"},
+  {symbol:"FOREXCOM:NSXUSD"},
+  {symbol:"BITSTAMP:BTCUSD"},
+  {symbol:"TVC:GOLD"}
+];
 
-  /* ─── PROMPT SECTIONS ─── */
-  const sections = {
-    moat: `━━ ECONOMIC MOAT ━━
-• Rate the competitive moat: pricing power, switching costs, network effects, intangible assets, cost advantages
-• How durable is this advantage over the next decade?
-• Can competitors replicate this within 3–5 years?
-• Is the TAM large, underpenetrated, and growing?
-`,
-    growth: `━━ GROWTH DRIVERS ━━
-• Identify the top 2–3 catalysts that could drive exponential revenue growth
-• Assess organic vs inorganic growth levers (R&D, M&A, geographic expansion)
-• Realistic revenue CAGR for the next 5 years: bull / base / bear scenarios
-• Is this a winner-takes-most market dynamic?
-`,
-    financials: `━━ FINANCIAL HEALTH ━━
-• Revenue growth rate (trailing 3 years vs forward estimates)
-• Gross margin trend and operating leverage potential
-• Free cash flow profile — is the business self-funding or burning cash?
-• Balance sheet: net cash or debt? Runway if pre-profitable?
-• ROIC vs WACC — is capital being deployed effectively?
-`,
-    management: `━━ MANAGEMENT & INCENTIVES ━━
-• Is this founder-led or run by a long-tenure operator?
-• Do insiders own meaningful equity (>5%)? Any recent buying or selling?
-• Capital allocation track record — buybacks, dividends, acquisitions
-• Has management delivered on past guidance?
-`,
-    valuation: `━━ VALUATION ━━
-• Current EV/Revenue, P/E, EV/EBITDA vs sector peers
-• DCF implied growth rate — is the market underpricing future growth?
-• Where does the stock need to be in {HORIZON} to hit a {TARGET} return?
-• What exit multiple is realistic, and why?
-• Is there a margin of safety at the current price?
-`,
-    risks: `━━ RISK ANALYSIS ━━
-• Regulatory, competitive, or macro risks that could derail the thesis
-• Key assumptions that must hold for the bull case to work
-• What would make you sell immediately?
-• Black swan scenarios: dilution, insider exits, market share loss
-`,
-    verdict: `━━ FINAL VERDICT ━━
-Rate this stock: Strong Buy / Buy / Hold / Avoid
-Conviction score: 1–10
-State the single most important reason to own or avoid it.
-State the #1 risk to the thesis.
-`,
-  };
-
-  /* ─── STATE ─── */
-  const active = {moat:true,growth:true,financials:true,management:true,valuation:true,risks:true,verdict:true};
-
-  function getVals() {
-    return {
-      ticker: document.getElementById('p-ticker').value.trim() || '[COMPANY / TICKER]',
-      horizon: document.getElementById('p-horizon').value,
-      target: document.getElementById('p-target').value,
-      risk: document.getElementById('p-risk').value,
-      stage: document.getElementById('p-stage').value,
-      sector: document.getElementById('p-sector').value.trim(),
-    };
-  }
-
-  function buildPrompt() {
-    const v = getVals();
-    const sectorLine = v.sector ? `\nSector / theme focus: ${v.sector}` : '';
-    let out = `You are an expert equity analyst and fund manager specializing in identifying multi-bagger stocks — companies with the potential to deliver a ${v.target} return over a ${v.horizon} holding period.
-
-Analyze ${v.ticker} as a potential multi-bagger investment.
-
-Parameters:
-• Company/Ticker: ${v.ticker}
-• Investment horizon: ${v.horizon}
-• Target return: ${v.target}
-• Risk tolerance: ${v.risk}
-• Company stage: ${v.stage}${sectorLine}
-
-Use the following framework:
-
-`;
-    Object.keys(sections).forEach(k => {
-      if (active[k]) {
-        out += sections[k].replace(/{HORIZON}/g, v.horizon).replace(/{TARGET}/g, v.target) + '\n';
-      }
-    });
-    return out.trimEnd();
-  }
-
-  function renderPrompt() {
-    const raw = buildPrompt();
-    const el = document.getElementById('prompt-output');
-    el.textContent = raw;
-  }
-
-  /* ─── TOGGLES ─── */
-  document.getElementById('toggles').addEventListener('click', e => {
-    const btn = e.target.closest('.toggle-pill');
-    if (!btn) return;
-    const k = btn.dataset.key;
-    active[k] = !active[k];
-    btn.classList.toggle('active', active[k]);
-    renderPrompt();
+function buildStatWidgets(range){
+  var container=document.getElementById('stats');
+  container.innerHTML='';
+  statSymbols.forEach(function(s){
+    var card=document.createElement('div');
+    card.className='stat-card';
+    var widgetDiv=document.createElement('div');
+    widgetDiv.className='tradingview-widget-container';
+    var innerDiv=document.createElement('div');
+    innerDiv.className='tradingview-widget-container__widget';
+    widgetDiv.appendChild(innerDiv);
+    var script=document.createElement('script');
+    script.type='text/javascript';
+    script.src='https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.async=true;
+    script.textContent=JSON.stringify({symbol:s.symbol,width:"100%",height:"100%",locale:"en",dateRange:range,colorTheme:"dark",isTransparent:true,autosize:true,largeChartUrl:""});
+    widgetDiv.appendChild(script);
+    card.appendChild(widgetDiv);
+    container.appendChild(card);
   });
+}
 
-  /* ─── LIVE UPDATE ─── */
-  ['p-ticker','p-horizon','p-target','p-risk','p-stage','p-sector'].forEach(id => {
-    document.getElementById(id).addEventListener('input', renderPrompt);
-    document.getElementById(id).addEventListener('change', renderPrompt);
+// Initial load
+buildStatWidgets('1M');
+
+// Timeframe toggle clicks
+document.querySelectorAll('#tf-toggles .tf-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#tf-toggles .tf-btn').forEach(function(b){b.classList.remove('active');});
+    this.classList.add('active');
+    buildStatWidgets(this.dataset.range);
   });
+});
 
-  /* ─── COPY ─── */
-  function copyPrompt() {
-    navigator.clipboard.writeText(buildPrompt()).then(() => {
-      const t = document.getElementById('toast');
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
+// --- Prompt Generator ---
+// Toggle analysis tags
+document.querySelectorAll('#pg-tags .tag').forEach(function(tag){
+  tag.addEventListener('click',function(){this.classList.toggle('active');generatePrompt();});
+});
+
+// Auto-generate on any input change
+['pg-ticker','pg-horizon','pg-return','pg-risk'].forEach(function(id){
+  var el=document.getElementById(id);
+  el.addEventListener('input',generatePrompt);
+  el.addEventListener('change',generatePrompt);
+});
+
+function generatePrompt(){
+  var ticker=document.getElementById('pg-ticker').value.trim();
+  var horizon=document.getElementById('pg-horizon').value;
+  var ret=document.getElementById('pg-return').value;
+  var risk=document.getElementById('pg-risk').value;
+  var activeTags=[];
+  document.querySelectorAll('#pg-tags .tag.active').forEach(function(t){activeTags.push(t.dataset.tag);});
+
+  if(!ticker){
+    document.getElementById('prompt-output').textContent='Your generated prompt will appear here. Enter a ticker above to get started.';
+    return '';
+  }
+
+  var prompt='You are an expert equity research analyst specializing in identifying multi-bagger stocks.\n\n';
+  prompt+='Perform a comprehensive analysis of '+ticker+' as a potential multi-bagger investment.\n\n';
+  prompt+='PARAMETERS:\n';
+  prompt+='- Time horizon: '+horizon+'\n';
+  prompt+='- Return target: '+ret+'\n';
+  prompt+='- Risk tolerance: '+risk+'\n';
+  prompt+='\nANALYSIS SECTIONS TO COVER:\n';
+  activeTags.forEach(function(t,i){prompt+=(i+1)+'. '+t+'\n';});
+  prompt+='\nFor each section, provide:\n';
+  prompt+='- Key data points and metrics\n';
+  prompt+='- Bull case vs. bear case\n';
+  prompt+='- Specific risks and catalysts\n';
+  prompt+='\nConclude with a conviction rating (1-10) and a clear BUY / HOLD / AVOID recommendation with price targets for the '+horizon+' time frame.';
+
+  document.getElementById('prompt-output').textContent=prompt;
+  return prompt;
+}
+
+function copyPrompt(){
+  var prompt=generatePrompt();
+  if(!prompt){alert('Please enter a ticker first.');return;}
+  navigator.clipboard.writeText(prompt).then(function(){showToast('Prompt copied to clipboard!');});
+}
+
+function useWithAi(app){
+  var prompt=generatePrompt();
+  if(!prompt){alert('Please enter a ticker first.');return;}
+  var appName=app.charAt(0).toUpperCase()+app.slice(1);
+  if(app==='gemini'){
+    var geminiUrl='https://gemini.google.com/app?q='+encodeURIComponent(prompt);
+    showToast('Opening Gemini with your prompt...');
+    setTimeout(function(){window.open(geminiUrl,'_blank');},300);
+  } else {
+    navigator.clipboard.writeText(prompt).then(function(){
+      showToast('Prompt copied! Paste (Ctrl+V) in '+appName);
+      var urls={
+        chatgpt:'https://chat.openai.com/',
+        claude:'https://claude.ai/',
+        grok:'https://grok.com/'
+      };
+      setTimeout(function(){window.open(urls[app],'_blank');},400);
     });
   }
+}
 
-  /* ─── OPEN IN CHATGPT ─── */
-  function openInChatGPT() {
-    const prompt = encodeURIComponent(buildPrompt());
-    window.open('https://chatgpt.com/?q=' + prompt, '_blank');
+function showToast(msg){
+  var toast=document.getElementById('copied-toast');
+  if(!toast){
+    toast=document.createElement('div');
+    toast.id='copied-toast';
+    toast.className='copied-toast';
+    document.body.appendChild(toast);
   }
+  toast.textContent=msg;
+  toast.style.display='block';
+  setTimeout(function(){toast.style.display='none';},2000);
+}
 
-  /* ─── INIT ─── */
-  renderPrompt();
+// Generate on load if ticker has value
+generatePrompt();
 </script>
+
 </body>
 </html>
